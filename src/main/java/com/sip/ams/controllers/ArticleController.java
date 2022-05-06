@@ -1,5 +1,6 @@
 package com.sip.ams.controllers;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -7,6 +8,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 //import org.springframework.web.bind.annotation.ModelAttribute;
@@ -15,11 +17,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 //import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.sip.ams.FileUploadUtil;
 import com.sip.ams.entities.Article;
 import com.sip.ams.entities.Provider;
 import com.sip.ams.repositories.ArticleRepository;
 import com.sip.ams.repositories.ProviderRepository;
+
 @Controller
 @RequestMapping("/article/")
 public class ArticleController {
@@ -53,13 +58,18 @@ public class ArticleController {
     
     @PostMapping("add")
     //@ResponseBody
-    public String addArticle(@Valid Article article, BindingResult result, @RequestParam(name = "providerId", required = false) Long p) {
-    	
+    public String addArticle( Article article, @RequestParam("image") MultipartFile multipartFile,BindingResult result, @RequestParam(name = "providerId", required = false) Long p)throws IOException {
+    	System.out.println(multipartFile);
     	Provider provider = providerRepository.findById(p)
                 .orElseThrow(()-> new IllegalArgumentException("Invalid provider Id:" + p));
     	article.setProvider(provider);
-    	
-    	 articleRepository.save(article);
+    	String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+        article.setPhotos(fileName);
+        System.out.println(fileName);
+    	Article savedArticle = articleRepository.save(article);
+    	String uploadDir = "articles-photos/" + savedArticle.getId();
+    	 
+         FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
     	 return "redirect:list";
     	
     	//return article.getLabel() + " " +article.getPrice() + " " + p.toString();

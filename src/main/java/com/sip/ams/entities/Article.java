@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.OnDelete;
@@ -25,10 +26,18 @@ public class Article {
     @Column(name = "label")
     private String label;
     
+    @Column(nullable = true, length = 64)
+    private String photos;
     
- 
     @Column(name = "price")
     private float price;
+    
+    @Transient
+    public String getPhotosImagePath() {
+        if (photos == null) return null;
+         
+        return "/articles-photos/" + id + "/" + photos;
+    }
 
     public Article() {}
 
@@ -62,6 +71,15 @@ public class Article {
 	}
 
 	
+	public String getPhotos() {
+		return photos;
+	}
+
+	public void setPhotos(String photos) {
+		this.photos = photos;
+	}
+
+
 	/**** Many To One ****/
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
