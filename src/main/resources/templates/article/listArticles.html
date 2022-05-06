@@ -56,6 +56,13 @@
 									Articles<i class="fas fa-angle-left right"></i>
 								</p>
 						</a>
+						<li class="nav-item menu-open" sec:authorize="hasRole('Admin')"><a
+							href="http://localhost:8082/provider/list" class="nav-link ">
+								<i class="nav-icon fas fa-table"></i>
+								<p>
+									Providers <i class="fas fa-angle-left right"></i>
+								</p>
+						</a>
 				</nav>
 				<!-- /.sidebar-menu -->
 			</div>
@@ -83,6 +90,7 @@
 					<div class="row mb-2">
 						<div class="col-sm-6">
 							<h1>Articles List</h1>
+
 						</div>
 
 					</div>
@@ -101,41 +109,80 @@
 									class="fas fa-user-plus ml-2"> Add Article</i></a>
 							</p>
 							<div class="card">
-								<div class="card-header">
-									<h3 class="card-title">DataTable with Articles List</h3>
+								<div class="card-header"
+									th:with="maxlength=${T(com.sip.ams.entities.Article).nbres_articles}">
+									<h3 class="card-title">N° of Articles in list :</h3>
+
+									<span th:text="${maxlength}"></span>
+
 								</div>
 								<!-- /.card-header -->
+
 								<div class="card-body">
-									<table id="example2" class="table table-bordered table-hover">
-										<thead>
-											<tr>
-												<th>Label</th>
-												<th>Price</th>
-												<th>Provider</th>
-												<th>Edit</th>
-												<th>Delete</th>
-											</tr>
-										</thead>
+									<form th:action="@{name}" method="get">
+										<input type="text" name="search" id="search" /> <input
+											type="submit" value="Search" />
+										<div th:if="${not #lists.isEmpty(search)}">
+											<table id="example2" class="table table-bordered table-hover">
+												<thead>
+													<tr>
+														<th>Label</th>
+														<th>Price</th>
+														<th>Provider</th>
+														<th>Edit</th>
+														<th>Delete</th>
+													</tr>
+												</thead>
 
-										<tbody>
-											<tr th:each="article : ${articles}">
-												<td th:text="${article.label}"></td>
-												<td th:text="${article.price}"></td>
-												<td th:text="${article.provider.name}"></td>
-												<td><a
-													th:href="@{/article/edit/{id}(id=${article.id})}"
-													class="btn btn-warning"><i
-														class="fas fa-user-edit ml-2"></i></a></td>
-												<td><a
-													th:href="@{/article/delete/{id}(id=${article.id})}"
-													class="btn btn-danger"><i
-														class="fas fa-user-times ml-2"></i></a></td>
-											</tr>
-										</tbody>
-										<tfoot>
+												<tbody>
+													<tr th:each="article : ${search}">
+														<td th:text="${article.label}"></td>
+														<td th:text="${article.price}"></td>
+														<td th:text="${article.provider.name}"></td>
+														<td><a
+															th:href="@{/article/edit/{id}(id=${article.id})}"
+															class="btn btn-warning"><i
+																class="fas fa-user-edit ml-2"></i></a></td>
+														<td><a
+															th:href="@{/article/delete/{id}(id=${article.id})}"
+															class="btn btn-danger"><i
+																class="fas fa-user-times ml-2"></i></a></td>
+													</tr>
+												</tbody>
 
-										</tfoot>
-									</table>
+											</table>
+										</div>
+										<div th:if="${#lists.isEmpty(search)}">
+											<table id="example2" class="table table-bordered table-hover">
+												<thead>
+													<tr>
+														<th>Label</th>
+														<th>Price</th>
+														<th>Provider</th>
+														<th>Edit</th>
+														<th>Delete</th>
+													</tr>
+												</thead>
+
+												<tbody>
+													<tr th:each="article : ${articles}">
+														<td th:text="${article.label}"></td>
+														<td th:text="${article.price}"></td>
+														<td th:text="${article.provider.name}"></td>
+														<td><a
+															th:href="@{/article/edit/{id}(id=${article.id})}"
+															class="btn btn-warning"><i
+																class="fas fa-user-edit ml-2"></i></a></td>
+														<td><a
+															th:href="@{/article/delete/{id}(id=${article.id})}"
+															class="btn btn-danger"><i
+																class="fas fa-user-times ml-2"></i></a></td>
+													</tr>
+												</tbody>
+
+											</table>
+										</div>
+									</form>
 								</div>
 								<!-- /.card-body -->
 							</div>
@@ -150,14 +197,6 @@
 			<!-- /.content -->
 		</div>
 		<!-- /.content-wrapper -->
-		<footer class="main-footer">
-			<div class="float-right d-none d-sm-block">
-				<b>Version</b> 3.2.0
-			</div>
-			<strong>Copyright &copy; 2014-2021 <a
-				href="https://adminlte.io">AdminLTE.io</a>.
-			</strong> All rights reserved.
-		</footer>
 
 		<!-- Control Sidebar -->
 		<aside class="control-sidebar control-sidebar-dark">
@@ -166,7 +205,14 @@
 		<!-- /.control-sidebar -->
 	</div>
 	<!-- ./wrapper -->
-
+	<footer class="main-footer">
+		<div class="float-right d-none d-sm-block">
+			<b>Version</b> 3.2.0
+		</div>
+		<strong>Copyright &copy; 2014-2021 <a
+			href="https://adminlte.io">AdminLTE.io</a>.
+		</strong> All rights reserved.
+	</footer>
 
 	<script
 		src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>

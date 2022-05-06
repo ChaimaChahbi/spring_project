@@ -51,18 +51,18 @@
 						<!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
 
-						<li class="nav-item menu-open" sec:authorize="hasRole('Admin')"><a
-							href="http://localhost:8082/provider/list"
-							class="nav-link "> <i class="nav-icon fas fa-table"></i>
-								<p>
-									Providers <i class="fas fa-angle-left right"></i>
-								</p>
-						</a>
 						<li class="nav-item menu-open"><a
 							href="http://localhost:8082/article/list" class="nav-link ">
 								<i class="nav-icon fas fa-table"></i>
 								<p>
 									Articles<i class="fas fa-angle-left right"></i>
+								</p>
+						</a>
+						<li sec:authorize="hasRole('Admin')" class="nav-link active"><a
+							href="http://localhost:8082/provider/list" class="nav-link ">
+								<i class="nav-icon fas fa-table"></i>
+								<p>
+									Providers <i class="fas fa-angle-left right"></i>
 								</p>
 						</a>
 				</nav>
@@ -74,28 +74,28 @@
 		<!-- Content Wrapper. Contains page content -->
 		<div class="content-wrapper">
 			<!-- Content Header (Page header) -->
-			
-			<section class="content-header">
-			<div class="col-sm-12"  style="text-align: right">
-				<div sec:authorize="isAuthenticated()">
-					<form id="logoutForm" method="POST" th:action="@{/logout}">
-						<input type="hidden" name="${_csrf.parameterName}"
-							value="${_csrf.token}" />
-					</form>
 
-					<h2>
-						<button class="btn btn-danger"
-							onclick="document.forms['logoutForm'].submit()">Logout</button>
-					</h2>
+			<section class="content-header">
+				<div class="col-sm-12" style="text-align: right">
+					<div sec:authorize="isAuthenticated()">
+						<form id="logoutForm" method="POST" th:action="@{/logout}">
+							<input type="hidden" name="${_csrf.parameterName}"
+								value="${_csrf.token}" />
+						</form>
+
+						<h2>
+							<button class="btn btn-danger"
+								onclick="document.forms['logoutForm'].submit()">Logout</button>
+						</h2>
+					</div>
 				</div>
-			</div>
 				<div class="container-fluid">
 					<div class="row mb-2">
 						<div class="col-sm-6">
-							<h1>Articles List</h1>
+							<h1>Providers List</h1>
 						</div>
 
-						
+
 					</div>
 				</div>
 				<!-- /.container-fluid -->
@@ -104,7 +104,7 @@
 			<!-- Main content -->
 			<section class="content">
 				<div class="container-fluid">
-				
+
 					<div class="row">
 						<div class="col-12">
 							<p class="my-5">
@@ -112,51 +112,94 @@
 									class="fas fa-user-plus ml-2"> Add Provider</i></a>
 							</p>
 							<div class="card">
-								<div class="card-header">
-									<h3 class="card-title">DataTable with Articles List</h3>
+								<div class="card-header"
+									th:with="maxlength=${T(com.sip.ams.entities.Provider).nbres_providers}">
+									<h3 class="card-title">N° of Providers in list :</h3>
+									<span th:text="${maxlength}"></span>
+
 								</div>
+
 								<!-- /.card-header -->
 								<div class="card-body">
-									<table id="example2" class="table table-bordered table-hover">
-										<thead>
-											<tr>
-												<th>Name</th>
-												<th>Email</th>
-												<th>Address</th>
-												<th>Edit</th>
-												<th>Delete</th>
-											</tr>
-										</thead>
-										<tbody>
-											<tr th:each="provider : ${providers}">
-												<td th:text="${provider.name}"></td>
-												<td th:text="${provider.email}"></td>
-												<td th:text="${provider.address}"></td>
-												<td><a
-													th:href="@{/provider/edit/{id}(id=${provider.id})}"
-													class="btn btn-warning"><i
-														class="fas fa-user-edit ml-2"></i></a></td>
-												<td><a
-													th:href="@{/provider/delete/{id}(id=${provider.id})}"
-													class="btn btn-danger"><i
-														class="fa-solid fa-pen-to-square"></i></a></td>
-											</tr>
-										</tbody>
-									</table>
+								<form th:action="@{name}" method="get">
+										<input type="text" name="search" id="search"  /> 
+										<input type="submit" value="Search" />
+										<div th:if="${not #lists.isEmpty(search)}">	
+									
+										<table id="example2" class="table table-bordered table-hover">
+											<thead>
+												<tr>
+													<th>Name</th>
+													<th>Email</th>
+													<th>Address</th>
+													<th>Edit</th>
+													<th>Delete</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="provider : ${search}">
+													<td th:text="${provider.name}"></td>
+													<td th:text="${provider.email}"></td>
+													<td th:text="${provider.address}"></td>
+													<td><a
+														th:href="@{/provider/edit/{id}(id=${provider.id})}"
+														class="btn btn-warning"><i
+															class="fas fa-user-edit ml-2"></i></a></td>
+													<td><a
+														th:href="@{/provider/delete/{id}(id=${provider.id})}"
+														class="btn btn-danger"><i
+															class="fas fa-user-times ml-2"></i></a></td>
+												</tr>
+											</tbody>
+										</table>
+										</div>
+										<div th:if="${#lists.isEmpty(search)}">	
+									
+										<table id="example2" class="table table-bordered table-hover">
+											<thead>
+												<tr>
+													<th>Name</th>
+													<th>Email</th>
+													<th>Address</th>
+													<th>Edit</th>
+													<th>Delete</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr th:each="provider : ${providers}">
+													<td th:text="${provider.name}"></td>
+													<td th:text="${provider.email}"></td>
+													<td th:text="${provider.address}"></td>
+													<td><a
+														th:href="@{/provider/edit/{id}(id=${provider.id})}"
+														class="btn btn-warning"><i
+															class="fas fa-user-edit ml-2"></i></a></td>
+													<td><a
+														th:href="@{/provider/delete/{id}(id=${provider.id})}"
+														class="btn btn-danger"><i
+															class="fas fa-user-times ml-2"></i></a></td>
+												</tr>
+											</tbody>
+										</table>
+										</div>
+										</form>
+										</form>
+										
+										</div>
+									</div>
+									<!-- /.card-body -->
 								</div>
-								<!-- /.card-body -->
+								<!-- /.card -->
 							</div>
-							<!-- /.card -->
+							<!-- /.col -->
 						</div>
-						<!-- /.col -->
+						<!-- /.row -->
 					</div>
-					<!-- /.row -->
-				</div>
-				<!-- /.container-fluid -->
+					<!-- /.container-fluid -->
 			</section>
 			<!-- /.content -->
 		</div>
-		
+
 		<!-- /.content-wrapper -->
 
 

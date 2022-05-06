@@ -24,6 +24,8 @@ public class Provider {
     @NotBlank(message = "Email is mandatory")
     @Column(name = "email")
     private String email;
+    
+    public static int nbres_providers;
 
     public Provider() {}
 

@@ -38,7 +38,9 @@ public class Article {
          
         return "/articles-photos/" + id + "/" + photos;
     }
-
+    
+    public static int nbres_articles;
+    
     public Article() {}
 
     public Article(String label, float price) {

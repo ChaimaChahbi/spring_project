@@ -35,7 +35,12 @@ public class ArticleController {
         this.articleRepository = articleRepository;
         this.providerRepository = providerRepository;
     }
-    
+    @GetMapping("name")
+    public String showProviderBySurname(@RequestParam(value = "search", required = false) String name, Model model) {
+    	System.out.println(name);
+        model.addAttribute("search", articleRepository.findBylabel(name));
+        return "article/listArticles";
+    }
     @GetMapping("list")
     public String listProviders(Model model) {
     	List<Article> la =(List<Article>) articleRepository.findAll();
@@ -43,6 +48,7 @@ public class ArticleController {
     	{
     		la = null;
     	}
+    	Article.nbres_articles = la.size();
     	model.addAttribute("articles", la);
         //model.addAttribute("articles", articleRepository.findAll());
         return "article/listArticles";
